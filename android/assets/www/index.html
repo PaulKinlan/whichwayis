@@ -1,0 +1,235 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Which way is</title>
+    <meta name="viewport" content="width=device-width; height=device-height; user-scalable=no" />
+    <script type="text/javascript" charset="utf-8" src="cordova-1.7.0.js"></script>
+    <style>
+      .requesting {
+        display: none;
+      }
+
+      .locationCapturing {
+        background-color: orange;
+      }
+
+      .locationCapturing .requesting {
+        display: block;
+      }
+
+      .locationCaptured {
+        background-color: green;
+      }
+
+      .locationCaptureFailed {
+        background-color: red;
+      }
+      
+      #pointer {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+    </style>
+    <script>
+      var dumpObject = function(obj) {
+        for(var key in obj) {
+          console.log("key: " + key + ", value: " + obj[key]);
+        }
+      }
+    
+      var OnAnyChange = function(properties, callback) {
+        var callback = callback || function() {};
+       
+        var listener = function(val) {
+          callback(val);
+        };
+      
+        for(var i = 0; i < properties.length; i++) {
+          var property = properties[i];
+          property.addChangeListener(listener);
+        }
+      };
+      
+      var Observable = function(propertyName, _this) {
+        var value;
+        this.changeListeners = [];
+        var  changeListeners = this.changeListeners
+        
+        _this.__defineGetter__(propertyName, function() {
+          return value;
+        });
+        
+        _this.__defineSetter__(propertyName, function(newVal) {
+          value = newVal;
+          for(var i = 0; i < changeListeners.length; i++) {
+            changeListeners[i].call(_this, newVal);
+          }
+        });
+      };
+      
+      Observable.prototype.addChangeListener = function(callback) {
+        this.changeListeners.push(callback);
+      };
+      
+      Observable.prototype.removeChangeListener = function(callback) {
+        var i = this.changeListeners.indexOf(callback);
+        this.changeListeners = this.changeListeners.splice(i, 1);
+      };
+      
+      var GeoView = function() {
+        this.controller = undefined;
+        
+        var root = document.body;
+        
+        var changeState = function() {
+          root.className = state;
+        };
+        
+        this.init = function() {
+          var targetInput = document.getElementById("requestedLocation");
+          var targetInputButton = document.getElementById("requestTarget");
+          targetInput.addEventListener("click", function() {
+            this.controller.targetChanged(targetInput.value);
+          });
+        };
+        
+        this.showLocation = function(location) {
+          var mapimgSrc = document.getElementById("pointer");
+          var apiKey = "AIzaSyAl280d28vAJd_6431Uc0N5AwHMowThy8c";
+          var dimensions = window.innerWidth + "x" + window.innerHeight;
+          var url = "http://maps.google.com/maps/api/staticmap?center=" + location.latitude + "," + location.longitude + "&zoom=13&sensor=false&size=" + dimensions + "&maptype=roadmap&key=" + apiKey;
+        
+          mapimgSrc.src = url;       
+        };
+        
+        this.showError = function(err) {};
+        this.showFetching = function() {};
+      };
+      
+      var GeoModel = function() {
+        this.location = {};
+        this.target = {};
+      };
+      
+      var GeoController = function(view, model) {
+        var model = model;
+        view.controller = this;
+        // Private State
+        var _locationObserver = new Observable("location", model);
+        var _targetObserver = new Observable("target", model);
+        
+        // Logic
+        OnAnyChange([_locationObserver, _targetObserver], function() {
+          if(!!model.location == false || !!model.target == false) return;
+          
+          // Recalculate the distance
+          var distance = calculateDistance(model.location.latitude, model.location.longitude, model.target.latitude, model.target.longitude);
+          
+          // Recalculate the bearing
+          var bearing = calculateBearing(model.location.latitude, model.location.longitude, model.target.latitude, model.target.longitude);
+          
+          // Update View
+          
+        });
+        
+        OnAnyChange([_locationObserver], function(value) {
+          view.showLocation(model.location);
+        });
+        
+        // Public Interfaces
+        this.init = function() {
+          view.init();       
+        };
+        
+        this.getLocation = function() {
+          var onSuccess = function(pos) {
+            var coords = pos.coords;
+            model.location = { latitude: coords.latitude, longitude: coords.longitude, heading: coords.heading };
+          };
+          var onFailure = function(err) {
+            view.showError(err);
+          };
+          
+          navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
+        };
+        
+        this.changeTarget = function(target) {
+          _geocode(target, function(location) {
+            // update the model
+            model.target = location;
+          });
+        };
+        
+        this.compassChange = function() {};
+      
+        // Private Methods
+        const GEOCODE_BASE_URL = "http://maps.googleapis.com/maps/api/geocode/json";
+        var _geocode = function(address, calback) {
+          var xhr = new XMLHttpRequest();
+          xhr.onload = function() {
+            var data = JSON.parse(xhr.responseText);
+            callback(data);
+          };
+        
+          xhr.open("GET", GEOCODE_BASE_URL + "?address=" + encodeURIComponent(address));
+        };
+        
+        //http://www.movable-type.co.uk/scripts/latlong.html
+        var calculateDistance = function(lat1, lon1, lat2, lon2) {
+          var R = 6371; // km
+          var dLat = (lat2-lat1).toRad();
+          var dLon = (lon2-lon1).toRad();
+          var lat1 = lat1.toRad();
+          var lat2 = lat2.toRad();
+		
+          var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+          return R * c;
+        };
+      
+        var calculateBearing = function(lat1, lon1, lat2, lon2) {
+          var dLat = (lat2-lat1).toRad();
+          var dLon = (lon2-lon1).toRad();
+          var lat1 = lat1.toRad();
+          var lat2 = lat2.toRad();
+        
+          var y = Math.sin(dLon) * Math.cos(lat2);
+          var x = Math.cos(lat1)*Math.sin(lat2) -
+                  Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+          return Math.atan2(y, x).toDeg();
+        };
+        
+        var fetchTargetLocation = function(target) {
+          // Do Magic.
+          geococde(target, function(data) {
+            if(data.results.length > 0) {
+              var targetLocation = data.results[0].location;
+              _target = targetLocation;
+            }      
+          });
+        };
+      };
+        
+      var view = new GeoView();
+      var model = new GeoModel();
+      var controller = new GeoController(view, model);
+
+      window.addEventListener("load", function() {
+        controller.init();
+        controller.getLocation();
+      });
+
+    </script>
+  </head>
+  <body>
+    <div id="heading">
+      <input type="search" id="requestedLocation" />
+      <input type="button" id="requestTarget" />
+    </div>
+    <img id="pointer">
+  </body>
+</html>
