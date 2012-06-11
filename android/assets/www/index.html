@@ -25,12 +25,37 @@
         background-color: red;
       }
       
-      #pointer {
+      #heading {
+        position: absolute;
+        top: 0;
+        height: 2em;
+        left: 0;
+        right: 0;
+        z-index:3;
+      }
+      
+      #heading input[type="search"] {
+        font-size: 2em;
+        width: 100%;
+      }
+      
+      #background {
         position: absolute;
         top: 0;
         bottom: 0;
         left: 0;
         right: 0;
+        z-index:1;
+      }
+      
+      #pointer {
+        position: absolute;
+        -webkit-transform-origin: 50% 50%;
+        -webkit-transform: rotate(0deg);
+        width: 100%;
+        height: 128px;
+        background-color: red;
+        z-index:2;
       }
     </style>
     <script>
@@ -80,29 +105,36 @@
       };
       
       var GeoView = function() {
-        this.controller = undefined;
-        
-        var root = document.body;
+        var _controller = undefined;
+        var _root = document.body;
         
         var changeState = function() {
-          root.className = state;
+          _root.className = state;
         };
         
-        this.init = function() {
+        this.init = function(controller) {
+          _controller = controller;
           var targetInput = document.getElementById("requestedLocation");
-          var targetInputButton = document.getElementById("requestTarget");
-          targetInput.addEventListener("click", function() {
-            this.controller.targetChanged(targetInput.value);
+          targetInput.addEventListener("change", function() {
+            _controller.targetChanged(targetInput.value);
           });
         };
         
         this.showLocation = function(location) {
-          var mapimgSrc = document.getElementById("pointer");
+          var mapimgSrc = document.getElementById("background");
           var apiKey = "AIzaSyAl280d28vAJd_6431Uc0N5AwHMowThy8c";
           var dimensions = window.innerWidth + "x" + window.innerHeight;
           var url = "http://maps.google.com/maps/api/staticmap?center=" + location.latitude + "," + location.longitude + "&zoom=13&sensor=false&size=" + dimensions + "&maptype=roadmap&key=" + apiKey;
         
           mapimgSrc.src = url;       
+        };
+        
+        this.showDirection = function(model, distance, bearing) {
+          console.log(model.heading.trueHeading);
+          var angle = model.heading.trueHeading - bearing;
+          var pointer = document.getElementById("pointer");
+          pointer.style.webkitTransform = "rotate(" + angle + "deg)";
+          pointer.height = pointer.width;
         };
         
         this.showError = function(err) {};
@@ -111,6 +143,7 @@
       
       var GeoModel = function() {
         this.location = {};
+        this.heading = 0.0;
         this.target = {};
       };
       
@@ -119,21 +152,27 @@
         view.controller = this;
         // Private State
         var _locationObserver = new Observable("location", model);
+        var _headingObserver = new Observable("heading", model);
         var _targetObserver = new Observable("target", model);
         
+        var headingWatch;
+        
         // Logic
-        OnAnyChange([_locationObserver, _targetObserver], function() {
+        OnAnyChange([_locationObserver, _targetObserver, _headingObserver], function() {
           if(!!model.location == false || !!model.target == false) return;
           
           // Recalculate the distance
           var distance = calculateDistance();
+          console.log("Distance: " + distance);
           
           // Recalculate the bearing
           var bearing = calculateBearing();
+          console.log("Bearing: " + bearing);
           
           // Update View
-          
+          view.showDirection(model, distance, bearing); 
         });
+       
         
         OnAnyChange([_locationObserver], function(value) {
           view.showLocation(model.location);
@@ -141,48 +180,88 @@
         
         // Public Interfaces
         this.init = function() {
-          view.init();       
+          view.init(this);       
+        };
+        
+        this.targetChanged = function(target) {
+          changeTarget(target);
         };
         
         this.getLocation = function() {
           var onSuccess = function(pos) {
             var coords = pos.coords;
-            model.location = { latitude: coords.latitude, longitude: coords.longitude, heading: coords.heading };
+            model.location = { latitude: coords.latitude, longitude: coords.longitude };
           };
           var onFailure = function(err) {
+            console.log("ERROR: " + err);
             view.showError(err);
           };
           
+          var onHeadingSuccess = function(heading) {
+            console.log("HEADING: " + heading.trueHeading)
+            model.heading = heading;
+          };
+          
           navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
+          headingWatch = navigator.compass.watchHeading(onHeadingSuccess, onFailure, {frequency: 3000});
         };
         
-        this.changeTarget = function(target) {
+        var changeTarget = function(target) {
           _geocode(target, function(location) {
             // update the model
-            model.target = location;
+            if(location.status === "OK") {
+              var geometry = location.results[0].geometry.location;
+              model.target = { "latitude": geometry.lat, "longitude": geometry.lng} ;
+            }
+            else {
+              // there was an error geocoding.
+            }
           });
         };
-        
-        this.compassChange = function() {};
       
         // Private Methods
         const GEOCODE_BASE_URL = "http://maps.googleapis.com/maps/api/geocode/json";
-        var _geocode = function(address, calback) {
+        var apiKey = "AIzaSyAl280d28vAJd_6431Uc0N5AwHMowThy8c";
+        
+        var _geocode = function(address, callback) {
           var xhr = new XMLHttpRequest();
           xhr.onload = function() {
+            console.log(xhr.responseText);
             var data = JSON.parse(xhr.responseText);
             callback(data);
           };
+          
+          xhr.onerror = function() {
+            console.log("there was an error geocoding");
+          };
+          
+          var query = GEOCODE_BASE_URL + "?sensor=false&address=" + encodeURIComponent(address);
+          console.log(query)
         
-          xhr.open("GET", GEOCODE_BASE_URL + "?address=" + encodeURIComponent(address));
+          xhr.open("GET", query);
+          xhr.send();
         };
         
         //http://www.movable-type.co.uk/scripts/latlong.html
+        /** Converts numeric degrees to radians */
+        if (typeof(Number.prototype.toRad) === "undefined") {
+          Number.prototype.toRad = function() {
+            return this * Math.PI / 180;
+          }
+        }
+        
+        if (typeof(Number.prototype.toDeg) === "undefined") {
+          Number.prototype.toDeg = function() {
+            return this * 180 / Math.PI;
+          }
+        }
+        
         var calculateDistance = function() {
           var lat1 = model.location.latitude;
           var lon1 = model.location.longitude;
           var lat2 = model.target.latitude;
           var lon2 = model.target.longitude;
+          
           var R = 6371; // km
           var dLat = (lat2-lat1).toRad();
           var dLon = (lon2-lon1).toRad();
@@ -210,34 +289,25 @@
                   Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
           return Math.atan2(y, x).toDeg();
         };
-        
-        var fetchTargetLocation = function(target) {
-          // Do Magic.
-          geococde(target, function(data) {
-            if(data.results.length > 0) {
-              var targetLocation = data.results[0].location;
-              _target = targetLocation;
-            }      
-          });
-        };
+
       };
         
       var view = new GeoView();
       var model = new GeoModel();
       var controller = new GeoController(view, model);
 
-      window.addEventListener("load", function() {
+      document.addEventListener("deviceready", function() {
         controller.init();
         controller.getLocation();
-      });
+      }, false);
 
     </script>
   </head>
   <body>
     <div id="heading">
       <input type="search" id="requestedLocation" />
-      <input type="button" id="requestTarget" />
     </div>
+    <img id="background">
     <img id="pointer">
   </body>
 </html>
