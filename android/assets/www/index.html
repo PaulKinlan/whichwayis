@@ -126,10 +126,10 @@
           if(!!model.location == false || !!model.target == false) return;
           
           // Recalculate the distance
-          var distance = calculateDistance(model.location.latitude, model.location.longitude, model.target.latitude, model.target.longitude);
+          var distance = calculateDistance();
           
           // Recalculate the bearing
-          var bearing = calculateBearing(model.location.latitude, model.location.longitude, model.target.latitude, model.target.longitude);
+          var bearing = calculateBearing();
           
           // Update View
           
@@ -178,7 +178,11 @@
         };
         
         //http://www.movable-type.co.uk/scripts/latlong.html
-        var calculateDistance = function(lat1, lon1, lat2, lon2) {
+        var calculateDistance = function() {
+          var lat1 = model.location.latitude;
+          var lon1 = model.location.longitude;
+          var lat2 = model.target.latitude;
+          var lon2 = model.target.longitude;
           var R = 6371; // km
           var dLat = (lat2-lat1).toRad();
           var dLon = (lon2-lon1).toRad();
@@ -191,7 +195,11 @@
           return R * c;
         };
       
-        var calculateBearing = function(lat1, lon1, lat2, lon2) {
+        var calculateBearing = function() {
+          var lat1 = model.location.latitude;
+          var lon1 = model.location.longitude;
+          var lat2 = model.target.latitude;
+          var lon2 = model.target.longitude;
           var dLat = (lat2-lat1).toRad();
           var dLon = (lon2-lon1).toRad();
           var lat1 = lat1.toRad();
