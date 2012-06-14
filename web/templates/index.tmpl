@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Which way is</title>
+    <meta name="viewport" content="width=device-width; height=device-height; user-scalable=no" />
+    <script type="text/javascript" src="scripts/models.js"></script>
+    <script type="text/javascript" src="scripts/views.js"></script>
+    <script type="text/javascript" src="scripts/controllers.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova-1.7.0.js"></script>
+    <link rel="stylesheet" href="styles/main.css" />
+    <script>
+      var dumpObject = function(obj) {
+        for(var key in obj) {
+          console.log("key: " + key + ", value: " + obj[key]);
+        }
+      }
+      
+      document.addEventListener("deviceready", function() {
+        var view = new GeoView();
+        var model = new GeoModel();
+        var controller = new GeoController(view, model);
+        controller.init();
+        controller.getLocation();
+      }, false);
+
+    </script>
+  </head>
+  <body>
+    <div id="heading">
+      <p>Which way is </p>
+      <input type="search" id="requestedLocation" placeholder="Amsterdam?" />
+    </div>
+    
+    <div id="background">
+      <img id="location" src="images/blank.png">
+      <img id="target" src="images/blank.png" >
+    </div>
+    <img id="pointer" border="0" src="images/arrow.png" />
+  </body>
+</html>
