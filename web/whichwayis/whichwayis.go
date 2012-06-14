@@ -10,7 +10,7 @@ func init() {
   http.HandleFunc("/", root)
 }
 
-tTmpl := template.Must(template.ParseFiles("templates.tmpl"))
+tTmpl := template.Must(template.ParseFiles("templates/index.tmpl"))
 
 func root(w http.ResponseWriter, r *http.Request) {
   /*

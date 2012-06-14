@@ -8,6 +8,18 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
+- url: /scripts
+  static_dir: static/scripts
+
+- url: /styles
+  static_dir: static/styles
+
+- url: /fonts
+  static_dir: static/fonts
+
+- url: /images
+  static_dir: static/images
+
 - url: .*
   script: _go_app
 
