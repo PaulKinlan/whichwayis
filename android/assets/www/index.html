@@ -15,13 +15,19 @@
         }
       }
       
-      document.addEventListener("deviceready", function() {
+      var init = function() {
         var view = new GeoView();
         var model = new GeoModel();
         var controller = new GeoController(view, model);
         controller.init();
         controller.getLocation();
-      }, false);
+      };
+      
+      var evt = "load"
+      var root = window;
+      if(document.ondeviceready) { evt = "deviceready"; root = document; }
+      
+      root.addEventListener(evt, init, false);
 
     </script>
   </head>

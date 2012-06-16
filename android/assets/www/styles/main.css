@@ -39,11 +39,10 @@ body {
   right:0;
   bottom:0;
   overflow: hidden;
-  background-image: -webkit-linear-gradient(top, #80E5FF 0%, #006FA3 100%);
-}
+ }
 
 #heading {
-  position: absolute;
+  position: relative;
   z-index:3;
   top:0;
   left: 0;
@@ -64,7 +63,7 @@ body {
 #heading p {
   margin: 0 0 5px 0;
   padding: 0;
-  text-shadow: 1px 1px 1px #868686;
+
 }
 
 input::-webkit-input-placeholder {
@@ -101,7 +100,7 @@ input::-webkit-input-placeholder {
 }
 
 #pointer {
-  position: absolute;
+  position: relative;
   -webkit-transform-origin: 50% 50%;
   -webkit-transform: rotate(0deg);
   -webkit-transition: -webkit-transform 0.2s linear;
