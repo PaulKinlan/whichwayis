@@ -30,6 +30,23 @@ img { border: 0; }
   background-color: red;
 }
 
+.networkNone #error {
+  height: 1em;
+  padding: 5px;
+}
+
+#error {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  background-color: red;
+  color: white;
+  height: 0;
+  padding: 0;
+  font-family: 'Advent Pro';
+  -webkit-transition: height 0.5s ease-in-out;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -80,7 +97,7 @@ input::-webkit-input-placeholder {
 }
 
 #location {
-  top: 10px;
+  top: 60px;
   left: 10px;
 }
 

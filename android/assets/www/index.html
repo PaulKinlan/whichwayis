@@ -7,6 +7,7 @@
     <script type="text/javascript" src="scripts/views.js"></script>
     <script type="text/javascript" src="scripts/controllers.js"></script>
     <script type="text/javascript" charset="utf-8" src="cordova-1.7.0.js"></script>
+    <script type="text/javascript" src="webintent.js"></script>
     <link rel="stylesheet" href="styles/main.css" />
     <script>
       var dumpObject = function(obj) {
@@ -21,22 +22,31 @@
         var controller = new GeoController(view, model);
         controller.init();
         controller.getLocation();
+        
+        window.plugins.webintent.getUri(function(url) {
+			if(url !== "") {
+			    // get the last value
+			    var idx = url.lastIndexOf("/");
+			    var location = url.substring(idx, url.length); 
+				controller.targetChanged(location);
+			}
+		});
       };
       
-      var evt = "load"
-      var root = window;
-      if(document.ondeviceready) { evt = "deviceready"; root = document; }
-      
-      root.addEventListener(evt, init, false);
-
+      if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/)) {
+		 document.addEventListener("deviceready", init, false);
+	  } else {
+		window.addEventListener("load", init, false);
+	  }
     </script>
   </head>
   <body>
+    <div id="error">
+    </div>
     <div id="heading">
       <p>Which way is </p>
       <input type="search" id="requestedLocation" placeholder="Amsterdam?" />
     </div>
-    
     <div id="background">
       <img id="location" src="images/blank.png">
       <img id="target" src="images/blank.png" >

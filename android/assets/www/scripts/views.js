@@ -48,7 +48,6 @@ var GeoView = function() {
     var angle = bearing - heading;
     var degree = angle;
     
-    
     var difference = Math.abs(_lastAngle - angle);
     if(difference > 180) { 
       // turn off the animation because we get a weired effect.
@@ -64,6 +63,10 @@ var GeoView = function() {
     _lastAngle = angle;
   };
 
-  this.showError = function(err) {};
+  this.showError = function(className, element, msg) {
+    var element = document.querySelector(element);
+    if(element) element.innerText = msg;
+    document.body.className = className;
+  };
   this.showFetching = function() {};
 };
