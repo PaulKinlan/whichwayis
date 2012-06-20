@@ -9,6 +9,10 @@
   font-family: 'Advent Pro';
 }
 
+html {
+  overflow:hidden;
+}
+
 img { border: 0; }
 .requesting {
   display: none;
@@ -114,6 +118,7 @@ input::-webkit-input-placeholder {
   right: 0;
   background-image: -webkit-linear-gradient(top, #80E5FF 0%, #006FA3 100%);
   z-index: 2;
+  overflow: hidden;
 }
 
 #pointer {

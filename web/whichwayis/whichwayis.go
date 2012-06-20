@@ -1,7 +1,6 @@
 package whichwayis
 
 import (
-  "fmt"
   "html/template"
   "net/http"
 )
@@ -10,13 +9,10 @@ func init() {
   http.HandleFunc("/", root)
 }
 
-tTmpl := template.Must(template.ParseFiles("templates/index.tmpl"))
+var tTmpl = template.Must(template.ParseFiles("templates/index.tmpl"))
 
 func root(w http.ResponseWriter, r *http.Request) {
-  /*
-     
-  */
-  tc: = make(map[sting]interfcae{})
-  tc["Target"] = r.URL.Path
+  tc := make(map[string]interface{})
+  tc["Target"] = r.URL.Path[1:len(r.URL.Path)]
   tTmpl.Execute(w, tc)
 }

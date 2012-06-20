@@ -30,6 +30,23 @@ img { border: 0; }
   background-color: red;
 }
 
+.networkNone #error {
+  height: 1em;
+  padding: 5px;
+}
+
+#error {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  background-color: red;
+  color: white;
+  height: 0;
+  padding: 0;
+  font-family: 'Advent Pro';
+  -webkit-transition: height 0.5s ease-in-out;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -39,11 +56,10 @@ body {
   right:0;
   bottom:0;
   overflow: hidden;
-  background-image: -webkit-linear-gradient(top, #80E5FF 0%, #006FA3 100%);
-}
+ }
 
 #heading {
-  position: absolute;
+  position: relative;
   z-index:3;
   top:0;
   left: 0;
@@ -64,7 +80,7 @@ body {
 #heading p {
   margin: 0 0 5px 0;
   padding: 0;
-  text-shadow: 1px 1px 1px #868686;
+
 }
 
 input::-webkit-input-placeholder {
@@ -81,7 +97,7 @@ input::-webkit-input-placeholder {
 }
 
 #location {
-  top: 10px;
+  top: 60px;
   left: 10px;
 }
 
@@ -101,7 +117,7 @@ input::-webkit-input-placeholder {
 }
 
 #pointer {
-  position: absolute;
+  position: relative;
   -webkit-transform-origin: 50% 50%;
   -webkit-transform: rotate(0deg);
   -webkit-transition: -webkit-transform 0.2s linear;

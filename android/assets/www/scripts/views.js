@@ -4,12 +4,14 @@ var GeoView = function() {
   var _pointer;
   var _background;
   var _heading;
+  var _top;
   
   var _lastAngle = 0.0;
   
   var onResizeWindow = function() {
     _pointer.height = _pointer.width;
-    _pointer.style.top = (background.clientHeight/2 - _pointer.clientHeight / 2) - _heading.clientHeight + "px";
+    _top = (background.clientHeight/2 - _pointer.clientHeight / 2) - _heading.clientHeight + "px";
+    _pointer.style.webkitTransform = "translate(0px, "+ _top + ") rotate(" + _lastAngle + "deg)";
   };
     var changeState = function() {
     _root.className = state;
@@ -26,7 +28,8 @@ var GeoView = function() {
     _heading = document.getElementById("heading");
     _pointer = document.getElementById("pointer");
     _pointer.height = _pointer.width;
-    _pointer.style.top = (background.clientHeight/2 - _pointer.height / 2) - _heading.clientHeight + "px";
+    _top = (background.clientHeight/2 - _pointer.height / 2) - _heading.clientHeight + "px";
+    _pointer.style.webkitTransform = "translate(0px, "+ _top + ") rotate(" + _lastAngle + "deg)";
     
     window.onresize = onResizeWindow;
   };
@@ -58,7 +61,7 @@ var GeoView = function() {
       _pointer.style.webkitTransition = "-webkit-transform 0.2s linear";
     }
     
-    _pointer.style.webkitTransform = "rotate(" + degree + "deg)";
+    _pointer.style.webkitTransform = "translate(0px, "+ _top + ") rotate(" + degree + "deg)";
     
     _lastAngle = angle;
   };

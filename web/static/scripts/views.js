@@ -2,9 +2,16 @@ var GeoView = function() {
   var _controller = undefined;
   var _root = document.body;
   var _pointer;
+  var _background;
+  var _heading;
+  
   var _lastAngle = 0.0;
-
-  var changeState = function() {
+  
+  var onResizeWindow = function() {
+    _pointer.height = _pointer.width;
+    _pointer.style.top = (background.clientHeight/2 - _pointer.clientHeight / 2) - _heading.clientHeight + "px";
+  };
+    var changeState = function() {
     _root.className = state;
   };
 
@@ -15,9 +22,13 @@ var GeoView = function() {
       _controller.targetChanged(targetInput.value);
     });
     
+    _background = document.getElementById("background");
+    _heading = document.getElementById("heading");
     _pointer = document.getElementById("pointer");
     _pointer.height = _pointer.width;
-    _pointer.style.top = (window.innerHeight/2 - _pointer.height / 2) + "px";
+    _pointer.style.top = (background.clientHeight/2 - _pointer.height / 2) - _heading.clientHeight + "px";
+    
+    window.onresize = onResizeWindow;
   };
 
   this.showLocation = function(location, element) {
@@ -37,7 +48,6 @@ var GeoView = function() {
     var angle = bearing - heading;
     var degree = angle;
     
-    
     var difference = Math.abs(_lastAngle - angle);
     if(difference > 180) { 
       // turn off the animation because we get a weired effect.
@@ -53,6 +63,10 @@ var GeoView = function() {
     _lastAngle = angle;
   };
 
-  this.showError = function(err) {};
+  this.showError = function(className, element, msg) {
+    var element = document.querySelector(element);
+    if(element) element.innerText = msg;
+    document.body.className = className;
+  };
   this.showFetching = function() {};
 };

@@ -71,7 +71,10 @@ var GeoController = function(view, model) {
   
   // Public Interfaces
   this.init = function() {
-    view.init(this);       
+    view.init(this);
+    if(navigator.network && navigator.network.connection == "NONE") {
+      view.showError("networkNone", "There is no network connection");
+    }
   };
   
   this.targetChanged = function(target) {
@@ -85,15 +88,20 @@ var GeoController = function(view, model) {
     };
     var onFailure = function(err) {
       console.log("ERROR: " + err);
-      view.showError(err);
+      view.showError("locationCaptureFailed", err);
     };
     
     var onHeadingSuccess = function(heading) {
       model.heading = heading;
     };
     
-    navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
-    headingWatch = navigator.compass.watchHeading(onHeadingSuccess, onFailure);
+    if(!!navigator.compass == false) {
+      view.showError("noCompass","No compass");
+    }
+    else {
+      navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
+      headingWatch = navigator.compass.watchHeading(onHeadingSuccess, onFailure);
+    }
   };
   
   var changeTarget = function(target) {
