@@ -6,6 +6,8 @@
     <script type="text/javascript" src="scripts/models.js"></script>
     <script type="text/javascript" src="scripts/views.js"></script>
     <script type="text/javascript" src="scripts/controllers.js"></script>
+    <script type="text/javascript" src="//webintents.org/webintents.min.js"></script>
+    <script type="text/javascript" src="//webintents.org/webintents-prefix.js"></script>
     <link rel="stylesheet" href="styles/main.css" />
     <script>
       var controller;
@@ -42,5 +44,13 @@
       <img id="target" src="images/blank.png" >
     </div>
     <img id="pointer" border="0" src="images/arrow.png" />
+    <button id="share">Share</button>
+    <script>
+      var share = document.getElementById("share");
+      share.addEventListener("click", function() {
+        var i = new Intent({action: "http://webintents.org/share", "text/uri-list", location.href});
+        navigator.startActivity(i);
+      }, false);
+    </script>
   </body>
 </html>
