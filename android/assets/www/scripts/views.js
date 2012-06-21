@@ -13,7 +13,8 @@ var GeoView = function() {
     _top = (background.clientHeight/2 - _pointer.clientHeight / 2) - _heading.clientHeight + "px";
     _pointer.style.webkitTransform = "translate(0px, "+ _top + ") rotate(" + _lastAngle + "deg)";
   };
-    var changeState = function() {
+  
+  var changeState = function() {
     _root.className = state;
   };
 

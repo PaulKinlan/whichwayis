@@ -46,6 +46,7 @@ var GeoController = function(view, model) {
   var _targetObserver = new Observable("target", model);
   
   var headingWatch;
+  var _target;
   
   // Logic
   OnAnyChange([_locationObserver, _targetObserver, _headingObserver], function() {
@@ -81,6 +82,20 @@ var GeoController = function(view, model) {
     changeTarget(target);
   };
   
+  this.share = function() {
+    var params = {
+      action: WebIntent.ACTION_SEND,
+      url: "http://whichway.is/" + _target
+    };
+    
+    if(_target) {
+      window.plugins.webintent.startActivity(params);
+    }
+    else {
+      // don't share if nothing is present.
+    }
+  };
+  
   this.getLocation = function() {
     var onSuccess = function(pos) {
       var coords = pos.coords;
@@ -105,6 +120,7 @@ var GeoController = function(view, model) {
   };
   
   var changeTarget = function(target) {
+    _target = target;
     _geocode(target, function(location) {
       // update the model
       if(location.status === "OK") {
