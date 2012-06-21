@@ -23,7 +23,12 @@ var GeoView = function() {
     var targetInput = document.getElementById("requestedLocation");
     targetInput.addEventListener("change", function() {
       _controller.targetChanged(targetInput.value);
-    });
+    }, false);
+    
+    var shareButton = document.getElementById("share");
+    shareButton.addEventListener("click", function() {
+      _controller.share(targetIntput.value);
+    }, false);
     
     _background = document.getElementById("background");
     _heading = document.getElementById("heading");
