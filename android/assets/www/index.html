@@ -24,13 +24,13 @@
         controller.getLocation();
         
         window.plugins.webintent.getUri(function(url) {
-			if(url !== "") {
-			    // get the last value
-			    var idx = url.lastIndexOf("/");
-			    var location = url.substring(idx, url.length); 
-				controller.targetChanged(location);
-			}
-		});
+			    if(url !== "") {
+			      // get the last value
+			      var idx = url.lastIndexOf("/");
+			      var location = url.substring(idx, url.length); 
+				    controller.targetChanged(location);
+		     	}
+		    });
       };
       
       if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/)) {
@@ -52,6 +52,5 @@
       <img id="target" src="images/blank.png" >
     </div>
     <img id="pointer" border="0" src="images/arrow.png" />
-    <button id="share">Share</button>
   </body>
 </html>

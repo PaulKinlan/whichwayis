@@ -60,6 +60,7 @@ body {
   right:0;
   bottom:0;
   overflow: hidden;
+  background-color: #006FA3;
  }
 
 #heading {
@@ -116,6 +117,7 @@ input::-webkit-input-placeholder {
   bottom: 0;
   left: 0;
   right: 0;
+  background-color: #006FA3;
   background-image: -webkit-linear-gradient(top, #80E5FF 0%, #006FA3 100%);
   z-index: 2;
   overflow: hidden;

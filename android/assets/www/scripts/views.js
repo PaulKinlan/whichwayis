@@ -24,10 +24,9 @@ var GeoView = function() {
     targetInput.addEventListener("change", function() {
       _controller.targetChanged(targetInput.value);
     }, false);
-    
-    var shareButton = document.getElementById("share");
-    shareButton.addEventListener("click", function() {
-      _controller.share(targetIntput.value);
+       
+    document.addEventListener("searchbutton", function() {
+      targetInput.focus();
     }, false);
     
     _background = document.getElementById("background");
@@ -73,9 +72,10 @@ var GeoView = function() {
   };
 
   this.showError = function(className, element, msg) {
-    var element = document.querySelector(element);
-    if(element) element.innerText = msg;
+    var el = document.querySelector(element);
+    if(element) el.innerText = msg;
     document.body.className = className;
   };
+
   this.showFetching = function() {};
 };
