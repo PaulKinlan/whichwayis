@@ -119,6 +119,8 @@ var GeoController = function(view, model) {
   };
   
   var changeTarget = function(target) {
+    window.plugins.target.setTarget(target); // tell the underlying app the URL.
+  
     _geocode(target, function(location) {
       // update the model
       if(location.status === "OK") {

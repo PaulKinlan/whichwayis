@@ -14,6 +14,12 @@ import android.view.MenuItem;
 import org.apache.cordova.*;
 
 public class WhichWayIsActivity extends DroidGap {
+	private String target;
+	
+	public void setTarget(String target) {
+		this.target = target;
+	}
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,9 +32,9 @@ public class WhichWayIsActivity extends DroidGap {
     public boolean onOptionsItemSelected(MenuItem item)
     {
         super.onOptionsItemSelected(item);
-        // TODO, get the current url
+        
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "http://whichway.is/");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "http://www.whichway.is/" + target);
         shareIntent.setType("text/plain");
         
         startActivity(shareIntent);
@@ -36,12 +42,10 @@ public class WhichWayIsActivity extends DroidGap {
         return true;
     }
     
-    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
     	MenuItem menuItem = menu.add(menu.NONE, menu.NONE, menu.NONE, R.string.menu_share);
 
-    	return false;
-    }*/
+    	return true;
+    }
 }
