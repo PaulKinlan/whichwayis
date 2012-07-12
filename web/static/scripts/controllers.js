@@ -91,25 +91,26 @@ var GeoController = function(view, model) {
       view.showError("locationCaptureFailed", err);
     };
     
-    var onHeadingSuccess = function(heading) {
-      model.heading = heading;
+    var onHeadingSuccess = function(e) {
+      if(!!e.webkitCompassHeading == true) {
+        var heading = e.webkitCompassHeading;
+        model.heading = heading;
+      }
     };
     
-    if(!!navigator.compass == false) {
-      view.showError("noCompass","No compass");
-    }
-    else {
-      navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
-      headingWatch = navigator.compass.watchHeading(onHeadingSuccess, onFailure);
-    }
+    navigator.geolocation.getCurrentPosition(onSuccess, onFailure);
+    model.heading = 0;
+    window.ondeviceorientation = onHeadingSuccess;
   };
   
   var changeTarget = function(target) {
+    window.history.pushState(target, "Which way is " + target, target);
+    gapi.plusone.render("sharing", {"href": document.location.href});
     _geocode(target, function(location) {
       // update the model
       if(location.status === "OK") {
         var geometry = location.results[0].geometry.location;
-        model.target = { "latitude": geometry.lat, "longitude": geometry.lng} ;
+        model.target = { "latitude": geometry.$a, "longitude": geometry.ab} ;
       }
       else {
         // there was an error geocoding.
@@ -118,26 +119,15 @@ var GeoController = function(view, model) {
   };
 
   // Private Methods
-  const GEOCODE_BASE_URL = "http://maps.googleapis.com/maps/api/geocode/json";
-  var apiKey = "AIzaSyAl280d28vAJd_6431Uc0N5AwHMowThy8c";
+  var apiKey = "AIzaSyBM--hdB8Wkf2WZEwU3Zv74-d7cG0noKlM";
   
   var _geocode = function(address, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-      var data = JSON.parse(xhr.responseText);
-      callback(data);
-    };
-    
-    xhr.onerror = function() {
-      console.log("there was an error geocoding");
-    };
-    
-    var query = GEOCODE_BASE_URL + "?sensor=false&address=" + encodeURIComponent(address);
-  
-    xhr.open("GET", query);
-    xhr.send();
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      callback({"status": status, "results": results}); 
+    })
   };
-  
+   
   //http://www.movable-type.co.uk/scripts/latlong.html
   /** Converts numeric degrees to radians */
   if (typeof(Number.prototype.toRad) === "undefined") {

@@ -32,7 +32,7 @@ var GeoView = function() {
   };
 
   this.showLocation = function(location, element) {
-    var apiKey = "AIzaSyAl280d28vAJd_6431Uc0N5AwHMowThy8c";
+    var apiKey = "AIzaSyBM--hdB8Wkf2WZEwU3Zv74-d7cG0noKlM";
     var dimensions = element.width + "x" + element.height;
     var url = "http://maps.google.com/maps/api/staticmap?center=" + location.latitude + "," + location.longitude + "&zoom=13&sensor=false&size=" + dimensions + "&maptype=roadmap&key=" + apiKey;
 
@@ -44,7 +44,7 @@ var GeoView = function() {
   };
 
   this.showDirection = function(model, distance, bearing) {
-    var heading = model.heading.trueHeading;
+    var heading = model.heading || 0;
     var angle = bearing - heading;
     var degree = angle;
     

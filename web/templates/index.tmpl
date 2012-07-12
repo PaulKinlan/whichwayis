@@ -2,17 +2,23 @@
 <html>
   <head>
     <title>Which way is {{.Target}}</title>
-    <meta name="viewport" content="width=device-width; height=device-height; user-scalable=no" />
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no" />
     <script type="text/javascript" src="scripts/models.js"></script>
     <script type="text/javascript" src="scripts/views.js"></script>
     <script type="text/javascript" src="scripts/controllers.js"></script>
     <script type="text/javascript" src="//webintents.org/webintents.min.js"></script>
     <script type="text/javascript" src="//webintents.org/webintents-prefix.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+    {"parsetags": "explicit"}
+    </script> 
     <link rel="stylesheet" href="styles/main.css" />
     <script>
       var controller;
+      var loaded = false;
     
-      document.addEventListener("load", function() {
+      window.addEventListener("load", function() {
+        window.scrollTo(0,1);
         var view = new GeoView();
         var model = new GeoModel();
         controller = new GeoController(view, model);
@@ -22,14 +28,15 @@
         var target = location.pathname;
         target = target.substr(1, target.length);
        
-        target.changeTarget(target);
-        
+        controller.targetChanged(target);
+        loaded = true;
       }, false);
 
       window.onpopstate = function(e) {
+        if(!loaded) return;
         var url = location.pathname;
-        target = target.substr(1, target.length);
-        target.changeTarget(target);
+        url = url.substr(1, url.length);
+        controller.targetChanged(url);
       };
     </script>
   </head>
@@ -44,13 +51,16 @@
       <img id="target" src="images/blank.png" >
     </div>
     <img id="pointer" border="0" src="images/arrow.png" />
+    <footer id="sharing">
+    <g:plusone id="plusone"></g:plusone>
     <button id="share">Share</button>
     <script>
       var share = document.getElementById("share");
       share.addEventListener("click", function() {
-        var i = new Intent({action: "http://webintents.org/share", "text/uri-list", location.href});
+        var i = new Intent({action: "http://webintents.org/share", type: "text/uri-list", href: location.href});
         navigator.startActivity(i);
       }, false);
     </script>
+    </footer>
   </body>
 </html>
