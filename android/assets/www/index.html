@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Which way is</title>
-    <meta name="viewport" content="width=device-width; height=device-height; user-scalable=no" />
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no" />
     <script type="text/javascript" src="scripts/models.js"></script>
     <script type="text/javascript" src="scripts/views.js"></script>
     <script type="text/javascript" src="scripts/controllers.js"></script>
@@ -11,12 +11,6 @@
     <script type="text/javascript" src="target.js"></script>
     <link rel="stylesheet" href="styles/main.css" />
     <script>
-      var dumpObject = function(obj) {
-        for(var key in obj) {
-          console.log("key: " + key + ", value: " + obj[key]);
-        }
-      }
-      
       var init = function() {
         var view = new GeoView();
         var model = new GeoModel();
@@ -25,17 +19,20 @@
         controller.getLocation();
         
         window.plugins.webintent.getUri(function(url) {
-			    if(url !== "") {
+          console.log("Got a url: " + url)
+			    if(url !== "" || !!url == false) {
+			      var targetElement = document.getElementById("requestedLocation");
 			      // get the last value
 			      var idx = url.lastIndexOf("/");
-			      var location = url.substring(idx, url.length); 
-				    controller.targetChanged(location);
+			      var location = url.substring(idx + 1, url.length); 
+				  controller.targetChanged(location);
+				  targetElement.value = location;
 		     	}
-		    });
+		}, function(e) {console.log("fail", e);});
       };
       
       if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/)) {
-		 document.addEventListener("deviceready", init, false);
+		document.addEventListener("deviceready", init, false);
 	  } else {
 		window.addEventListener("load", init, false);
 	  }

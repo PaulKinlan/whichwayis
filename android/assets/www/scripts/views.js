@@ -73,7 +73,7 @@ var GeoView = function() {
 
   this.showError = function(className, element, msg) {
     var el = document.querySelector(element);
-    if(element) el.innerText = msg;
+    if(el) el.innerText = msg;
     document.body.className = className;
   };
 

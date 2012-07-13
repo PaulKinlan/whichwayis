@@ -73,26 +73,12 @@ var GeoController = function(view, model) {
   this.init = function() {
     view.init(this);
     if(navigator.network && navigator.network.connection == "NONE") {
-      view.showError("networkNone", "There is no network connection");
+      view.showError("networkNone", "#error", "There is no network connection");
     }
   };
   
   this.targetChanged = function(target) {
     changeTarget(target);
-  };
-  
-  this.share = function(target) {
-    var params = {
-      action: WebIntent.ACTION_SEND,
-      url: "http://whichway.is/" + target
-    };
-    
-    if(_target) {
-      window.plugins.webintent.startActivity(params);
-    }
-    else {
-      // don't share if nothing is present.
-    }
   };
   
   this.getLocation = function() {
@@ -101,8 +87,7 @@ var GeoController = function(view, model) {
       model.location = { latitude: coords.latitude, longitude: coords.longitude };
     };
     var onFailure = function(err) {
-      console.log("ERROR: " + err);
-      view.showError("locationCaptureFailed", err);
+      view.showError("locationCaptureFailed","#error", err);
     };
     
     var onHeadingSuccess = function(heading) {
@@ -110,7 +95,7 @@ var GeoController = function(view, model) {
     };
     
     if(!!navigator.compass == false) {
-      view.showError("noCompass","No compass");
+      view.showError("noCompass","#error", "No compass");
     }
     else {
       navigator.geolocation.getCurrentPosition(onSuccess, onFailure);

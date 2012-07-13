@@ -14,9 +14,9 @@ import android.view.MenuItem;
 import org.apache.cordova.*;
 
 public class WhichWayIsActivity extends DroidGap {
-	private String target;
+	private Uri target;
 	
-	public void setTarget(String target) {
+	public void setTarget(Uri target) {
 		this.target = target;
 	}
 	
@@ -26,6 +26,12 @@ public class WhichWayIsActivity extends DroidGap {
         super.onCreate(savedInstanceState);
               
         super.loadUrl("file:///android_asset/www/index.html");
+        
+        Intent i = getIntent();
+        if(i != null) {
+        	Uri uri = i.getData();
+        	
+        }
     }
     
     @Override
@@ -34,7 +40,7 @@ public class WhichWayIsActivity extends DroidGap {
         super.onOptionsItemSelected(item);
         
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "http://www.whichway.is/" + target);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, target.toString());
         shareIntent.setType("text/plain");
         
         startActivity(shareIntent);
