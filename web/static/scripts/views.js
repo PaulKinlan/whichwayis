@@ -64,8 +64,8 @@ var GeoView = function() {
   };
 
   this.showError = function(className, element, msg) {
-    var element = document.querySelector(element);
-    if(element) element.innerText = msg;
+    var el = document.querySelector(element);
+    if(el) el.innerText = msg;
     document.body.className = className;
   };
   this.showFetching = function() {};

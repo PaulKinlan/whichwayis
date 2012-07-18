@@ -73,7 +73,7 @@ var GeoController = function(view, model) {
   this.init = function() {
     view.init(this);
     if(navigator.network && navigator.network.connection == "NONE") {
-      view.showError("networkNone", "There is no network connection");
+      view.showError("networkNone", "#error", "There is no network connection");
     }
   };
   
@@ -86,9 +86,9 @@ var GeoController = function(view, model) {
       var coords = pos.coords;
       model.location = { latitude: coords.latitude, longitude: coords.longitude };
     };
+
     var onFailure = function(err) {
-      console.log("ERROR: " + err);
-      view.showError("locationCaptureFailed", err);
+      view.showError("locationCaptureFailed", "#error",  "Please ensure you have Geo-location enabled");
     };
     
     var onHeadingSuccess = function(e) {
@@ -110,7 +110,7 @@ var GeoController = function(view, model) {
       // update the model
       if(location.status === "OK") {
         var geometry = location.results[0].geometry.location;
-        model.target = { "latitude": geometry.$a, "longitude": geometry.ab} ;
+        model.target = { "latitude": geometry.lat(), "longitude": geometry.lng()} ;
       }
       else {
         // there was an error geocoding.
